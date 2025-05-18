@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">Default Title</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .navbar-brand { font-weight: bold; }
+        .sidebar {
+            min-height: calc(100vh - 56px);
+            background-color: #f8f9fa;
+            padding-top: 20px;
+        }
+        .sidebar .nav-link { color: #333; border-radius: 0; }
+        .sidebar .nav-link:hover { background-color: #e9ecef; }
+        .sidebar .nav-link.active { background-color: #0d6efd; color: white; }
+        .content { padding: 20px; }
+        .card { margin-bottom: 20px; box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); }
+        .footer {
+            background-color: #f8f9fa;
+            padding: 15px 0;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #6c757d;
+            border-top: 1px solid #dee2e6;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">Employee Manager</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link" th:href="@{/employees}">Employees</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/departments}">Departments</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/swagger}">API Documentation</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <nav class="col-md-2 d-none d-md-block sidebar">
+            <div class="position-sticky">
+                <ul class="nav flex-column">
+                    <li class="nav-item"><a class="nav-link" th:href="@{/employees}"><i class="fas fa-users"></i> All Employees</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/employees/create}"><i class="fas fa-user-plus"></i> Add Employee</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/departments}"><i class="fas fa-building"></i> All Departments</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/departments/create}"><i class="fas fa-plus-circle"></i> Add Department</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <main class="col-md-10 ms-sm-auto px-md-4 content">
+            <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                <i class="fas fa-check-circle"></i> <span th:text="${successMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+                <i class="fas fa-exclamation-circle"></i> <span th:text="${errorMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <!-- MAIN CONTENT -->
+            <div th:insert="${content}"></div>
+        </main>
+    </div>
+</div>
+
+<footer class="footer mt-auto">
+    <div class="container">
+        <span>© 2025 Employee Manager - Spring Boot Application</span>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(function () {
+        $('[data-bs-toggle="tooltip"]').tooltip();
+    });
+
+    $(document).ready(function () {
+        const currentLocation = window.location.pathname;
+        $('.nav-link').each(function () {
+            const linkHref = $(this).attr('href');
+            if (currentLocation.startsWith(linkHref) && linkHref !== '/') {
+                $(this).addClass('active');
+            }
+        });
+    });
+</script>
+</body>
+</html>

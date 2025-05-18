@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="../templates/static/Style.css">
+    
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>Admin Panel</h1>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="active">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Dashboard
+                </li>
+                <li>
+                    <i class="fas fa-users"></i>
+                    <a href="Member.html">Team Member</a>
+                </li>
+                <li>
+                    <i class="fas fa-chart-line"></i>
+                    Analytics
+                </li>
+                <li>
+                    <i class="fas fa-cog"></i>
+                    Settings
+                </li>
+                <li>
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </li>
+            </ul>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Page Title -->
+            <div class="page-title">
+                <h2>Dashboard Overview</h2>
+            </div>
+            
+            <!-- Statistics Cards -->
+            <div class="cards">
+                <div class="card card-primary">
+                    <div class="card-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="card-title">Total Admins</div>
+                    <div class="card-value" th:text="${#lists.size(admins)}">15</div>
+                </div>
+                
+                <div class="card card-warning">
+                    <div class="card-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="card-title">Average Salary</div>
+                    <div class="card-value" id="avgSalary">$120,000</div>
+                </div>
+                
+                <div class="card card-success">
+                    <div class="card-icon">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <div class="card-title">Offices</div>
+                    <div class="card-value" id="officeCount">5</div>
+                </div>
+                
+                <div class="card card-danger">
+                    <div class="card-icon">
+                        <i class="fas fa-birthday-cake"></i>
+                    </div>
+                    <div class="card-title">Average Age</div>
+                    <div class="card-value" id="avgAge">32</div>
+                </div>
+            </div>
+            
+            <!-- Table -->
+            <div class="table-container">
+                <div class="table-header">
+                    <div class="table-title">Admin List</div>
+                    <button class="btn btn-primary">Add New Admin</button>
+                </div>
+                <div class="table-responsive">
+                    <table id="adminTable" class="display">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Position</th>
+                                <th>Office</th>
+                                <th>Age</th>
+                                <th>Start Date</th>
+                                <th>Salary</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="admin : ${admins}">
+                                <td th:text="${admin.name}">Tiger Nixon</td>
+                                <td>
+                                    <span th:text="${admin.position}" class="badge badge-primary">Developer</span>
+                                </td>
+                                <td th:text="${admin.office}">Edinburgh</td>
+                                <td th:text="${admin.age}">32</td>
+                                <td th:text="${admin.startDate}">2011/04/25</td>
+                                <td th:text="${admin.salary}">$320,800</td>
+                                <td>
+                                    <button class="btn btn-primary btn-sm">Edit</button>
+                                    <button class="btn btn-danger btn-sm">Delete</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Icons -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+    
+    <script>
+        // Sample data for testing (will be replaced by Thymeleaf data in production)
+        const adminData = [
+            {name: "Tiger Nixon", position: "Developer", office: "Edinburgh", age: 32, startDate: "2011/04/25", salary: "$320,800"},
+            {name: "Garrett Winters", position: "Manager", office: "Tokyo", age: 63, startDate: "2011/07/25", salary: "$170,750"},
+            {name: "Ashton Cox", position: "Designer", office: "San Francisco", age: 66, startDate: "2009/01/12", salary: "$86,000"},
+            {name: "Cedric Kelly", position: "Developer", office: "Edinburgh", age: 22, startDate: "2012/03/29", salary: "$433,060"},
+            {name: "Airi Satou", position: "Developer", office: "Tokyo", age: 33, startDate: "2008/11/28", salary: "$162,700"},
+            {name: "Brielle Williamson", position: "Designer", office: "New York", age: 61, startDate: "2012/12/02", salary: "$372,000"},
+            {name: "Herrod Chandler", position: "Manager", office: "San Francisco", age: 59, startDate: "2012/08/06", salary: "$137,500"},
+            {name: "Rhona Davidson", position: "Developer", office: "Tokyo", age: 55, startDate: "2010/10/14", salary: "$327,900"},
+            {name: "Colleen Hurst", position: "Designer", office: "San Francisco", age: 39, startDate: "2009/09/15", salary: "$205,500"},
+            {name: "Sonya Frost", position: "Manager", office: "Edinburgh", age: 23, startDate: "2008/12/13", salary: "$103,600"},
+            {name: "Jena Gaines", position: "Developer", office: "London", age: 30, startDate: "2008/12/19", salary: "$90,560"},
+            {name: "Quinn Flynn", position: "Designer", office: "Edinburgh", age: 22, startDate: "2013/03/03", salary: "$342,000"},
+            {name: "Charde Marshall", position: "Manager", office: "San Francisco", age: 36, startDate: "2008/10/16", salary: "$470,600"},
+            {name: "Haley Kennedy", position: "Developer", office: "London", age: 43, startDate: "2012/12/18", salary: "$313,500"},
+            {name: "Tatyana Fitzpatrick", position: "Designer", office: "London", age: 19, startDate: "2010/03/17", salary: "$385,750"}
+        ];
+        
+        // Initialize DataTable
+        $(document).ready(function() {
+            $('#adminTable').DataTable({
+                data: adminData,
+                columns: [
+                    { data: 'name' },
+                    { 
+                        data: 'position',
+                        render: function(data) {
+                            let badgeClass = 'badge-primary';
+                            if (data === 'Manager') badgeClass = 'badge-warning';
+                            if (data === 'Designer') badgeClass = 'badge-success';
+                            return `<span class="badge ${badgeClass}">${data}</span>`;
+                        }
+                    },
+                    { data: 'office' },
+                    { data: 'age' },
+                    { data: 'startDate' },
+                    { data: 'salary' },
+                    { 
+                        data: null,
+                        defaultContent: '<button class="btn btn-primary btn-sm">Edit</button> <button class="btn btn-danger btn-sm">Delete</button>',
+                        orderable: false
+                    }
+                ]
+            });
+            
+            // Calculate and update summary statistics
+            calculateStatistics();
+            
+            // Initialize charts
+            initCharts();
+            
+            // Handle chart filter changes
+            $('#salaryChartFilter, #ageChartFilter').change(function() {
+                initCharts();
+            });
+        });
+        
+        function calculateStatistics() {
+            // Calculate average salary
+            const salaries = adminData.map(admin => parseFloat(admin.salary.replace('$', '').replace(',', '')));
+            const avgSalary = salaries.reduce((a, b) => a + b, 0) / salaries.length;
+            $('#avgSalary').text('$' + Math.round(avgSalary).toLocaleString());
+            
+            // Calculate average age
+            const ages = adminData.map(admin => admin.age);
+            const avgAge = ages.reduce((a, b) => a + b, 0) / ages.length;
+            $('#avgAge').text(Math.round(avgAge));
+            
+            // Count unique offices
+            const offices = new Set(adminData.map(admin => admin.office));
+            $('#officeCount').text(offices.size);
+        }
+        
+        function initCharts() {
+            // Salary chart
+            const salaryFilter = $('#salaryChartFilter').val();
+            let filteredSalaryData = adminData;
+            
+            if (salaryFilter !== 'all') {
+                filteredSalaryData = adminData.filter(admin => admin.office === salaryFilter);
+            }
+            
+            const salaryLabels = filteredSalaryData.map(admin => admin.name);
+            const salaryData = filteredSalaryData.map(admin => parseFloat(admin.salary.replace('$', '').replace(',', '')));
+            
+            const salaryCtx = document.getElementById('salaryChart').getContext('2d');
+            if (window.salaryChart) window.salaryChart.destroy();
+            
+            window.salaryChart = new Chart(salaryCtx, {
+                type: 'bar',
+                data: {
+                    labels: salaryLabels,
+                    datasets: [{
+                        label: 'Salary ($)',
+                        data: salaryData,
+                        backgroundColor: 'rgba(74, 109, 229, 0.7)',
+                        borderColor: 'rgba(74, 109, 229, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Age chart
+            const ageFilter = $('#ageChartFilter').val();
+            let filteredAgeData = adminData;
+            
+            if (ageFilter !== 'all') {
+                filteredAgeData = adminData.filter(admin => admin.position === ageFilter);
+            }
+            
+            const ageLabels = filteredAgeData.map(admin => admin.name);
+            const ageData = filteredAgeData.map(admin => admin.age);
+            
+            const ageCtx = document.getElementById('ageChart').getContext('2d');
+            if (window.ageChart) window.ageChart.destroy();
+            
+            window.ageChart = new Chart(ageCtx, {
+                type: 'line',
+                data: {
+                    labels: ageLabels,
+                    datasets: [{
+                        label: 'Age',
+                        data: ageData,
+                        backgroundColor: 'rgba(142, 36, 170, 0.2)',
+                        borderColor: 'rgba(142, 36, 170, 1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        pointBackgroundColor: 'rgba(142, 36, 170, 1)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
